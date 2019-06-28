@@ -30,13 +30,16 @@ public class AnalizadorLexico {
 				posicionInicioPalabra += 2;
 				continue;
 			}
-			
+
 			System.out.println(posicionInicioPalabra);
 
-			if (esEntero())
+			if (esLogico())
 				continue;
-			if (esIdentificador())
-				continue;
+
+//			if (esEntero())
+//				continue;
+//			if (esIdentificador())
+//				continue;
 //			if (esSeparador())
 //				continue;
 //			if (esHexadecimal())
@@ -52,8 +55,155 @@ public class AnalizadorLexico {
 		}
 	}
 
-	public boolean esEntero() {
+	private boolean esLogico() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
 
+		if (caracterActual == '^' || caracterActual == 'v') {
+			
+			listaTokens.add(new Token(Categoria.LOGICO, caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+
+		if (caracterActual == '~') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '(') {
+				obtenerSiguienteCaracter();
+				if (esIdentificador()) {
+					if (caracterActual == ')') {
+						listaTokens.add(new Token(Categoria.LOGICO, "~()", filaActual, colActual));
+						obtenerSiguienteCaracter();
+						return true;
+					} else {
+						backtracking(posActual, filaAct, colAct);
+						return false;
+					}
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		if (caracterActual == '<') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '-') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.LOGICO, "<->", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public boolean esAsignacion() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == ':') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+				return true;
+			} else if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.ASIGNACION, "::>", filaActual, colActual));
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+					
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+
+		} else if (caracterActual == '>' || caracterActual == '<' || caracterActual == '|') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.ASIGNACION, caracterActual + ":>", filaActual, colActual));
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		if (caracterActual == '|') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '|') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == ':') {
+					obtenerSiguienteCaracter();
+					if (caracterActual == '>') {
+						listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+						return true;
+					} else {
+						backtracking(posActual, filaAct, colAct);
+						return false;
+					}
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public boolean IncrementoDecremento() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '>') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, ">>", filaActual, colActual));
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		} else if (caracterActual == '<') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '<') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, "<<", filaActual, colActual));
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean esEntero() {
 		if (Character.isDigit(caracterActual)) {
 
 			String palabra = "";
@@ -177,6 +327,12 @@ public class AnalizadorLexico {
 			return true;
 		}
 		return false;
+	}
+
+	public void backtracking(int posActual, int filaAct, int colAct) {
+		posicionActual = posActual;
+		filaActual = filaAct;
+		colActual = colAct;
 	}
 
 	public void obtenerSiguienteCaracter() {
