@@ -1,4 +1,4 @@
-package TLF.lexico;
+package lexico;
 
 public class App {
 
