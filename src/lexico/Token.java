@@ -15,7 +15,7 @@ public class Token {
 	@Override
 	public String toString() {
 		return "Token [categoria=" + categoria + ", palabra=" + palabra + ", fila=" + fila + ", columna=" + columna
-				+ "]";
+				+ "]\n";
 	}
 	
 	

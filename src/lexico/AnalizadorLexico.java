@@ -19,11 +19,18 @@ public class AnalizadorLexico {
 
 	public void analizar() {
 		while (caracterActual != finCodigo) {
-			if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t') {
+			if (caracterActual == ' ') {
 				obtenerSiguienteCaracter();
+				posicionInicioPalabra++;
+
 				continue;
 			}
-
+			if (caracterActual == '\n' || caracterActual == '\t') {
+				obtenerSiguienteCaracter();
+				posicionInicioPalabra += 2;
+				continue;
+			}
+			
 			System.out.println(posicionInicioPalabra);
 
 			if (esEntero())
@@ -64,7 +71,7 @@ public class AnalizadorLexico {
 
 			listaTokens.add(new Token(Categoria.ENTERO, palabra, fila, columna));
 
-			posicionInicioPalabra = posicionActual + 1;
+			posicionInicioPalabra = posicionActual;
 			return true;
 		}
 		return false;
@@ -89,7 +96,7 @@ public class AnalizadorLexico {
 
 			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
 
-			posicionInicioPalabra = posicionActual + 1;
+			posicionInicioPalabra = posicionActual;
 			return true;
 		}
 		return false;
