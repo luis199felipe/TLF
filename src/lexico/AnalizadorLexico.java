@@ -61,7 +61,7 @@ public class AnalizadorLexico {
 		int posActual = posicionActual;
 
 		if (caracterActual == '^' || caracterActual == 'v') {
-			
+
 			listaTokens.add(new Token(Categoria.LOGICO, caracterActual + "", filaActual, colActual));
 			obtenerSiguienteCaracter();
 			return true;
@@ -129,7 +129,7 @@ public class AnalizadorLexico {
 				} else {
 					backtracking(posActual, filaAct, colAct);
 					return false;
-					
+
 				}
 			} else {
 				backtracking(posActual, filaAct, colAct);
@@ -203,32 +203,78 @@ public class AnalizadorLexico {
 		return false;
 	}
 
-	public boolean esEntero() {
-		if (Character.isDigit(caracterActual)) {
-
-			String palabra = "";
+	/**
+	 * Método que identifica si una cadena de caracteres hace parte de la categoria
+	 * NUMERO_NATURAL definida dentro de los tokens de un lenguaje de programación.
+	 * 
+	 * @return true || false
+	 */
+	public boolean esNumeroNatural() {
+		if (caracterActual == 'n') {
+			String numero = "";
 			int fila = filaActual;
 			int columna = colActual;
 
-			// Transición
-			palabra += caracterActual;
+			numero += caracterActual;
 			obtenerSiguienteCaracter();
 
+			// Transición
 			while (Character.isDigit(caracterActual)) {
-				palabra += caracterActual;
+				numero += caracterActual;
 				obtenerSiguienteCaracter();
 			}
 
-			listaTokens.add(new Token(Categoria.ENTERO, palabra, fila, columna));
-
+			listaTokens.add(new Token(Categoria.NUMERO_NATURAL, numero, fila, columna));
 			posicionInicioPalabra = posicionActual;
 			return true;
 		}
 		return false;
 	}
 
-	public boolean esIdentificador() {
+	public boolean esNumeroReal(String real, int contadorPuntos) {
 
+		if (contadorPuntos == 1) {
+			// Transición si siguen más digitos despues del punto
+			if (Character.isDigit(caracterActual)) {
+
+				real += caracterActual;
+				obtenerSiguienteCaracter();
+				esNumeroReal(real, 0);
+
+			} else if (caracterActual == 'd') { // terminación del token
+
+				real += caracterActual;
+//				listaTokens.add(new Token(Categoria.NUMERO_REAL, real, fila, columna));
+				posicionInicioPalabra = posicionActual;
+				return true;
+
+			} else {
+				// rechazo inmediato
+				return false;
+			}
+		}
+
+		if (Character.isDigit(caracterActual)) { // Transición si siguen digitos
+
+			real += caracterActual;
+			obtenerSiguienteCaracter();
+			esNumeroReal(real, 0);
+
+		} else if (caracterActual == '.') { // Transición si sigue un punto
+
+			contadorPuntos = contadorPuntos + 1;
+			real += caracterActual;
+			obtenerSiguienteCaracter();
+			esNumeroReal(real, contadorPuntos);
+
+		} else if (!Character.isDigit(caracterActual) || caracterActual != '.') {
+			// rechazo inmediato
+			return false;
+		}
+		return false;
+	}
+
+	public boolean esIdentificador() {
 		if (Character.isLetter(caracterActual) || caracterActual == '_' || caracterActual == '$') {
 			String palabra = "";
 			int fila = filaActual;
@@ -336,7 +382,6 @@ public class AnalizadorLexico {
 	}
 
 	public void obtenerSiguienteCaracter() {
-
 		posicionActual++;
 		if (posicionActual < codigoFuente.length()) {
 
@@ -350,7 +395,6 @@ public class AnalizadorLexico {
 		} else {
 			caracterActual = finCodigo;
 		}
-
 	}
 
 	public String getCodigoFuente() {
