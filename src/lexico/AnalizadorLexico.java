@@ -607,6 +607,16 @@ public class AnalizadorLexico {
 		}
 	}
 
+	public void crearPalabraReservadas() {
+		palabrasReservadas.add("metodo");
+		palabrasReservadas.add("heredar");
+		palabrasReservadas.add("salir");
+		palabrasReservadas.add("continuar");
+		palabrasReservadas.add("usuario");
+		palabrasReservadas.add("hacer");
+		palabrasReservadas.add("accion");
+	}
+
 	public String getCodigoFuente() {
 		return codigoFuente;
 	}
