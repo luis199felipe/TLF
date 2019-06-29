@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class AnalizadorLexico {
 	private String codigoFuente;
 	private ArrayList<Token> listaTokens;
+	private ArrayList<String> palabrasReservadas;
 	private char caracterActual;
 	private char finCodigo;
 	private int posicionActual, filaActual, colActual, posicionInicioPalabra;
@@ -13,6 +14,7 @@ public class AnalizadorLexico {
 		this.posicionInicioPalabra = 0;
 		this.codigoFuente = codigoFuente;
 		this.listaTokens = new ArrayList<>();
+		this.palabrasReservadas = new ArrayList<String>();
 		this.caracterActual = codigoFuente.charAt(0);
 		this.finCodigo = '#';
 	}
@@ -111,7 +113,7 @@ public class AnalizadorLexico {
 		return false;
 	}
 
-	public boolean esAsignacion() {
+	public boolean esOperadorAsignacion() {
 		int filaAct = filaActual;
 		int colAct = colActual;
 		int posActual = posicionActual;
@@ -171,6 +173,108 @@ public class AnalizadorLexico {
 				backtracking(posActual, filaAct, colAct);
 				return false;
 			}
+		}
+		return false;
+	}
+
+	/**
+	 * Metodo que identifica si dentro de una cadena de caracteres existe un
+	 * operador aritmetico definido dentro de los tokens de un lenguaje de
+	 * programación.
+	 * 
+	 * @return true || false
+	 */
+	public boolean esOperadorAritmetico() {
+		int fila = filaActual;
+		int columna = colActual;
+		int posActual = posicionActual;
+
+		// operador de suma
+		if (caracterActual == '>') {
+			// transición
+			obtenerSiguienteCaracter();
+
+			// ambiguedad con el operador +=
+			if (caracterActual == ':') {
+				// siguiente transición
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					backtracking(posActual, fila, columna);
+					return false;
+				}
+			}
+
+			// ambiguedad con el operador ++
+			if (caracterActual == '>') {
+				backtracking(posActual, fila, columna);
+				return false;
+			}
+
+			listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, ">", fila, columna));
+			return true;
+
+			// operador de resta
+		} else if (caracterActual == '<') {
+			// transición
+			obtenerSiguienteCaracter();
+
+			// ambiguedad con el operador -=
+			if (caracterActual == ':') {
+				// siguiente transición
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					backtracking(posActual, fila, columna);
+					return false;
+				}
+			}
+
+			// ambiguedad con el operador --
+			if (caracterActual == '<') {
+				backtracking(posActual, fila, columna);
+				return false;
+			}
+
+			listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, "<", fila, columna));
+			return true;
+
+			// operadores de división, multiplicación y modulo
+		} else if (caracterActual == '|' || caracterActual == ':') {
+			String palabra = "";
+
+			palabra += caracterActual;
+			// transición
+			obtenerSiguienteCaracter();
+
+			// operador de modulo
+			if (caracterActual == '|') {
+				palabra += caracterActual;
+				// siguiente transición
+				obtenerSiguienteCaracter();
+
+				// ambiguedad con el operador %=
+				if (caracterActual == ':') {
+					// siguiente transición
+					obtenerSiguienteCaracter();
+					if (caracterActual == '>') {
+						backtracking(posActual, fila, columna);
+						return false;
+					}
+				}
+				listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, palabra, fila, columna));
+				return true;
+			}
+
+			// ambiguedad con los operadores /=, *=
+			if (caracterActual == ':') {
+				// siguiente transición
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					backtracking(posActual, fila, columna);
+					return false;
+				}
+			}
+			listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, palabra, fila, columna));
+			return true;
 		}
 		return false;
 	}
@@ -287,27 +391,121 @@ public class AnalizadorLexico {
 		return false;
 	}
 
+	/**
+	 * Método que identifica si una cadena de caracteres hace parte de la categoria
+	 * IDENTIFICADOR definida dentro de los tokens de una lenguaje de programación.
+	 * 
+	 * @return true || false
+	 */
 	public boolean esIdentificador() {
-		if (Character.isLetter(caracterActual) || caracterActual == '_' || caracterActual == '$') {
-			String palabra = "";
-			int fila = filaActual;
-			int columna = colActual;
-
-			// Transición
+		String palabra = "";
+		int fila = filaActual;
+		int columna = colActual;
+		if (Character.isLetter(caracterActual)) {
 			palabra += caracterActual;
+			// primera transición
 			obtenerSiguienteCaracter();
 
-			while (Character.isDigit(caracterActual) || Character.isLetter(caracterActual) || caracterActual == '_'
-					|| caracterActual == '$') {
+			if (Character.isLetter(caracterActual)) {
 				palabra += caracterActual;
+				// segunda transición
+				obtenerSiguienteCaracter();
+
+				if (Character.isDigit(caracterActual)) {
+					palabra += caracterActual;
+					// tercera transición
+					obtenerSiguienteCaracter();
+
+					if (Character.isDigit(caracterActual)) {
+						palabra += caracterActual;
+						// cuarta transición
+						obtenerSiguienteCaracter();
+
+						if (Character.isDigit(caracterActual)) {
+							palabra += caracterActual;
+							// quinta transición
+							obtenerSiguienteCaracter();
+
+							if (caracterActual == '_') {
+								palabra += caracterActual;
+								// sexta transición
+								obtenerSiguienteCaracter();
+
+								if (Character.isLetter(caracterActual)) {
+									palabra += caracterActual;
+									// ultima transición
+									obtenerSiguienteCaracter();
+									while (Character.isLetter(caracterActual)) {
+										palabra += caracterActual;
+										// ultima transición
+										obtenerSiguienteCaracter();
+									}
+
+									listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
+									posicionInicioPalabra = posicionActual;
+									return true;
+								} else {
+									// rechazo inmediato
+									return false;
+								}
+							} else {
+								// rechazo inmediato
+								return false;
+							}
+						} else {
+							// rechazo inmediato
+							return false;
+						}
+					} else {
+						// rechazo inmediato
+						return false;
+					}
+				} else {
+					// rechazo inmediato
+					return false;
+				}
+			} else {
+				// rechazo inmediato
+				return false;
+			}
+		} else {
+			// rechazo inmediato
+			return false;
+		}
+	}
+
+	/**
+	 * Método que identifica si una cadena de caracteres pertenece al conjunto de
+	 * palabras reservadas definidas dentro de los tokens de un lenguaje de
+	 * programación.
+	 * 
+	 * @return true || false
+	 */
+	public boolean esPalabraReservada() {
+		String palabra = "";
+		int fila = filaActual;
+		int columna = colActual;
+		if (Character.isLetter(caracterActual)) {
+			palabra += caracterActual;
+			// primera transición
+			obtenerSiguienteCaracter();
+
+			while (Character.isLetter(caracterActual)) {
+				palabra += caracterActual;
+				// demás transiciones
 				obtenerSiguienteCaracter();
 			}
 
-			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
-
-			posicionInicioPalabra = posicionActual;
-			return true;
+			if (palabrasReservadas.contains(palabra)) {
+				listaTokens.add(new Token(Categoria.PALABRA_RESERVADA, palabra, fila, columna));
+				posicionInicioPalabra = posicionActual;
+				return true;
+			} else {
+				// rechazo inmediato
+				return false;
+			}
 		}
+		// rechazo inmediato
 		return false;
 	}
 
