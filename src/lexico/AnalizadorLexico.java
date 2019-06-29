@@ -231,7 +231,19 @@ public class AnalizadorLexico {
 		return false;
 	}
 
-	public boolean esNumeroReal(String real, int contadorPuntos) {
+	/**
+	 * Método recursivo que verifica si una cadena de caracteres hace parte de la
+	 * categoria NUMERO_REAL definida dentro de los tokens de un lenguaje de
+	 * programación.
+	 * 
+	 * @param real,           cadena donde se va concatenando los caracteres válidos
+	 *                        del número real.
+	 * @param contadorPuntos, entero que cuenta las veces que aparece un punto,
+	 * @param fila,           fila desde donde se empieza a identificar el token.
+	 * @param columna,        columna desde donde se empieza a identificar el token.
+	 * @return true || false
+	 */
+	public boolean esNumeroReal(String real, int contadorPuntos, int fila, int columna) {
 
 		if (contadorPuntos == 1) {
 			// Transición si siguen más digitos despues del punto
@@ -239,37 +251,38 @@ public class AnalizadorLexico {
 
 				real += caracterActual;
 				obtenerSiguienteCaracter();
-				esNumeroReal(real, 0);
+				esNumeroReal(real, contadorPuntos, fila, columna);
 
 			} else if (caracterActual == 'd') { // terminación del token
 
 				real += caracterActual;
-//				listaTokens.add(new Token(Categoria.NUMERO_REAL, real, fila, columna));
+				listaTokens.add(new Token(Categoria.NUMERO_REAL, real, fila, columna));
 				posicionInicioPalabra = posicionActual;
 				return true;
 
-			} else {
+			} else if (!Character.isDigit(caracterActual) || caracterActual != 'd' || caracterActual == '.') {
 				// rechazo inmediato
 				return false;
 			}
-		}
+		} else {
 
-		if (Character.isDigit(caracterActual)) { // Transición si siguen digitos
+			if (Character.isDigit(caracterActual)) { // Transición si siguen digitos
 
-			real += caracterActual;
-			obtenerSiguienteCaracter();
-			esNumeroReal(real, 0);
+				real += caracterActual;
+				obtenerSiguienteCaracter();
+				esNumeroReal(real, contadorPuntos, fila, columna);
 
-		} else if (caracterActual == '.') { // Transición si sigue un punto
+			} else if (caracterActual == '.') { // Transición si sigue un punto
 
-			contadorPuntos = contadorPuntos + 1;
-			real += caracterActual;
-			obtenerSiguienteCaracter();
-			esNumeroReal(real, contadorPuntos);
+				contadorPuntos = contadorPuntos + 1;
+				real += caracterActual;
+				obtenerSiguienteCaracter();
+				esNumeroReal(real, contadorPuntos, fila, columna);
 
-		} else if (!Character.isDigit(caracterActual) || caracterActual != '.') {
-			// rechazo inmediato
-			return false;
+			} else if (!Character.isDigit(caracterActual) || caracterActual != '.') {
+				// rechazo inmediato
+				return false;
+			}
 		}
 		return false;
 	}
@@ -313,7 +326,6 @@ public class AnalizadorLexico {
 				return false;
 
 				// volver al principio de la palabra
-
 			}
 
 			// Ambiguedad con comentario --> <--
