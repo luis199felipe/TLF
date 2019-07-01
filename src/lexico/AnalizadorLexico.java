@@ -35,6 +35,10 @@ public class AnalizadorLexico {
 
 			System.out.println(posicionInicioPalabra);
 
+			if (esAsignacion())
+				continue;
+
+
 			if (esLogico())
 				continue;
 
@@ -56,14 +60,14 @@ public class AnalizadorLexico {
 
 		}
 	}
-
+	
 	private boolean esLogico() {
 		int filaAct = filaActual;
 		int colAct = colActual;
 		int posActual = posicionActual;
 
 		if (caracterActual == '^' || caracterActual == 'v') {
-
+			
 			listaTokens.add(new Token(Categoria.LOGICO, caracterActual + "", filaActual, colActual));
 			obtenerSiguienteCaracter();
 			return true;
@@ -110,6 +114,105 @@ public class AnalizadorLexico {
 				return false;
 			}
 		}
+		return false;
+	}
+
+	public boolean esAsignacion() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == ':') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.ASIGNACION, "::>", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+					
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+
+		} else if (caracterActual == '>' || caracterActual == '<' || caracterActual == '|') {
+			char primerC= caracterActual;
+			obtenerSiguienteCaracter();
+			if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.ASIGNACION, primerC + ":>", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		if (caracterActual == '|') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '|') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == ':') {
+					obtenerSiguienteCaracter();
+					if (caracterActual == '>') {
+						listaTokens.add(new Token(Categoria.ASIGNACION, "||:>", filaActual, colActual));
+						obtenerSiguienteCaracter();
+						return true;
+					} else {
+						backtracking(posActual, filaAct, colAct);
+						return false;
+					}
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public boolean IncrementoDecremento() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '>') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, ">>", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		} else if (caracterActual == '<') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '<') {
+				listaTokens.add(new Token(Categoria.ASIGNACION, "<<", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
 		return false;
 	}
 
@@ -279,34 +382,7 @@ public class AnalizadorLexico {
 		return false;
 	}
 
-	public boolean IncrementoDecremento() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == '>') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, ">>", filaActual, colActual));
-				return true;
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		} else if (caracterActual == '<') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '<') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, "<<", filaActual, colActual));
-				return true;
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		}
-
-		return false;
-	}
-
+	
 	/**
 	 * Método que identifica si una cadena de caracteres hace parte de la categoria
 	 * NUMERO_NATURAL definida dentro de los tokens de un lenguaje de programación.
@@ -589,6 +665,7 @@ public class AnalizadorLexico {
 		posicionActual = posActual;
 		filaActual = filaAct;
 		colActual = colAct;
+		caracterActual = codigoFuente.charAt(posicionActual);
 	}
 
 	public void obtenerSiguienteCaracter() {
