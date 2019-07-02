@@ -76,6 +76,21 @@ public class AnalizadorLexico {
 		return false;
 	}
 	
+	
+	private boolean esLlave() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '{' || caracterActual == '}') {
+			
+			listaTokens.add(new Token(Categoria.PARENTESIS , caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		return false;
+	}
+	
 	private boolean esLogico() {
 		int filaAct = filaActual;
 		int colAct = colActual;
