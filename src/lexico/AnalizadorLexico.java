@@ -41,7 +41,8 @@ public class AnalizadorLexico {
 
 			if (esLogico())
 				continue;
-
+			if (esParentesis())
+				continue;
 //			if (esEntero())
 //				continue;
 //			if (esIdentificador())
@@ -59,6 +60,20 @@ public class AnalizadorLexico {
 			obtenerSiguienteCaracter();
 
 		}
+	}
+	
+	private boolean esParentesis() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '(' || caracterActual == ')') {
+			
+			listaTokens.add(new Token(Categoria.PARENTESIS , caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		return false;
 	}
 	
 	private boolean esLogico() {
