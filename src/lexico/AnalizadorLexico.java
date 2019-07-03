@@ -54,8 +54,8 @@ public class AnalizadorLexico {
 //				continue;
 //			if (esIdentificador())
 //				continue;
-//			if (esSeparador())
-//				continue;
+			if (esSeparador())
+				continue;
 //			if (esHexadecimal())
 //				continue;
 //			if (esCadenaCaracteres())
@@ -609,7 +609,7 @@ public class AnalizadorLexico {
 				backtracking(posActual, filaAct, colAct);
 				return false;
 			}
-		} else { 
+		} else {
 			return false;
 		}
 	}
@@ -651,38 +651,36 @@ public class AnalizadorLexico {
 	}
 
 	public boolean esSeparador() {
+
 		if (caracterActual == '-') {
 			String palabra = "";
 			int fila = filaActual;
 			int columna = colActual;
+			int posActual = posicionActual;
+			palabra += caracterActual;
 
 			// Transición
-			palabra += caracterActual;
 			obtenerSiguienteCaracter();
 
-			// Ambiguedad con operador relacional <->
-			if (caracterActual == '>') {
-				return false;
+			System.out.println(caracterActual);
 
-				// volver al principio de la palabra
-			}
-
-			// Ambiguedad con comentario --> <--
-			if (caracterActual == '-') {
-				return false;
-
-				// volver al principio de la palabra
-
-			}
-
-			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
+			listaTokens.add(new Token(Categoria.SEPARADOR, palabra, fila, columna));
 			return true;
+
 		}
 		return false;
 	}
 
+	/**
+	 * Hexadecimal 
+	 * Ejemplo Hexadecimal 0xFF1A
+	 * @return
+	 */
 	public boolean esHexadecimal() {
 		if (caracterActual == '0') {
+			if(caracterActual == 'x') {
+				
+			}
 			String palabra = "";
 			int fila = filaActual;
 			int columna = colActual;
@@ -690,7 +688,7 @@ public class AnalizadorLexico {
 			// Transición
 			palabra += caracterActual;
 			obtenerSiguienteCaracter();
-			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
+			listaTokens.add(new Token(Categoria.HEXADECIMAL, palabra, fila, columna));
 			return true;
 		}
 		return false;
@@ -705,14 +703,19 @@ public class AnalizadorLexico {
 			// Transición
 			palabra += caracterActual;
 			obtenerSiguienteCaracter();
-			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
+			listaTokens.add(new Token(Categoria.CADENA_CARACTERES, palabra, fila, columna));
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Ejemplo comentario: $es un comentario$
+	 * 
+	 * @return
+	 */
 	public boolean esComentario() {
-		if (caracterActual == '-') {
+		if (caracterActual == '$') {
 			String palabra = "";
 			int fila = filaActual;
 			int columna = colActual;
@@ -720,7 +723,7 @@ public class AnalizadorLexico {
 			// Transición
 			palabra += caracterActual;
 			obtenerSiguienteCaracter();
-			listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
+			listaTokens.add(new Token(Categoria.COMENTARIO, palabra, fila, columna));
 			return true;
 		}
 		return false;
