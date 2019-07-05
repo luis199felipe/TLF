@@ -15,7 +15,14 @@ public class AnalizadorLexico {
 		this.codigoFuente = codigoFuente;
 		this.listaTokens = new ArrayList<>();
 		this.palabrasReservadas = new ArrayList<String>();
-		this.caracterActual = codigoFuente.charAt(0);
+		//this.caracterActual = codigoFuente.charAt(0);
+		this.finCodigo = '#';
+	}
+	public AnalizadorLexico() {
+		this.posicionInicioPalabra = 0;
+		this.listaTokens = new ArrayList<>();
+		this.palabrasReservadas = new ArrayList<String>();
+		//this.caracterActual = codigoFuente.charAt(0);
 		this.finCodigo = '#';
 	}
 
@@ -829,6 +836,7 @@ public class AnalizadorLexico {
 	}
 
 	public void setCodigoFuente(String codigoFuente) {
+		this.caracterActual = codigoFuente.charAt(0);
 		this.codigoFuente = codigoFuente;
 	}
 
