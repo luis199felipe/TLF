@@ -381,15 +381,15 @@ public class AnalizadorLexico {
 
 			// operadores de división, multiplicación y modulo
 		} else if (caracterActual == '|' || caracterActual == ':') {
-			String palabra = "";
+			String operador = "";
 
-			palabra += caracterActual;
+			operador += caracterActual;
 			// transición
 			obtenerSiguienteCaracter();
 
 			// operador de modulo
 			if (caracterActual == '|') {
-				palabra += caracterActual;
+				operador += caracterActual;
 				// siguiente transición
 				obtenerSiguienteCaracter();
 
@@ -402,8 +402,8 @@ public class AnalizadorLexico {
 						return false;
 					}
 				}
-				listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, palabra, fila, columna));
 
+				listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, operador, fila, columna));
 				return true;
 			}
 
@@ -416,7 +416,8 @@ public class AnalizadorLexico {
 					return false;
 				}
 			}
-			listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, palabra, fila, columna));
+
+			listaTokens.add(new Token(Categoria.OPERADOR_ARITMETICO, operador, fila, columna));
 			obtenerSiguienteCaracter();
 			return true;
 		}
@@ -456,11 +457,11 @@ public class AnalizadorLexico {
 	 * categoria NUMERO_REAL definida dentro de los tokens de un lenguaje de
 	 * programación.
 	 * 
-	 * @param real, cadena donde se va concatenando los caracteres válidos del
-	 *        número real.
+	 * @param real,           cadena donde se va concatenando los caracteres válidos
+	 *                        del número real.
 	 * @param contadorPuntos, entero que cuenta las veces que aparece un punto,
-	 * @param fila, fila desde donde se empieza a identificar el token.
-	 * @param columna, columna desde donde se empieza a identificar el token.
+	 * @param fila,           fila desde donde se empieza a identificar el token.
+	 * @param columna,        columna desde donde se empieza a identificar el token.
 	 * @return true || false
 	 */
 	public boolean esNumeroReal(String real, int contadorPuntos, int fila, int columna) {
@@ -476,9 +477,9 @@ public class AnalizadorLexico {
 			} else if (caracterActual == 'd') { // terminación del token
 
 				real += caracterActual;
+				posicionInicioPalabra = posicionActual;
 				listaTokens.add(new Token(Categoria.NUMERO_REAL, real, fila, columna));
 				obtenerSiguienteCaracter();
-				posicionInicioPalabra = posicionActual;
 				return true;
 
 			} else if (!Character.isDigit(caracterActual) || caracterActual != 'd' || caracterActual == '.') {
@@ -519,97 +520,103 @@ public class AnalizadorLexico {
 		int fila = filaActual;
 		int columna = colActual;
 		int posActual = posicionActual;
-		palabra += caracterActual;
-		int filaAct = filaActual;
-		int colAct = colActual;
 
 		if (Character.isLetter(caracterActual)) {
 			palabra += caracterActual;
-			filaAct = filaActual;
-			colAct = colActual;
+			fila = filaActual;
+			columna = colActual;
 
 			// primera transición
 			obtenerSiguienteCaracter();
 
 			if (Character.isLetter(caracterActual)) {
 				palabra += caracterActual;
-				palabra += caracterActual;
-				filaAct = filaActual;
-				colAct = colActual;
+				fila = filaActual;
+				columna = colActual;
+
 				// segunda transición
 				obtenerSiguienteCaracter();
 
 				if (Character.isDigit(caracterActual)) {
 					palabra += caracterActual;
+					fila = filaActual;
+					columna = colActual;
+
 					// tercera transición
 					obtenerSiguienteCaracter();
-					palabra += caracterActual;
-					filaAct = filaActual;
-					colAct = colActual;
 
 					if (Character.isDigit(caracterActual)) {
 						palabra += caracterActual;
+						fila = filaActual;
+						columna = colActual;
+
 						// cuarta transición
 						obtenerSiguienteCaracter();
-						palabra += caracterActual;
-						filaAct = filaActual;
-						colAct = colActual;
 
 						if (Character.isDigit(caracterActual)) {
 							palabra += caracterActual;
+							fila = filaActual;
+							columna = colActual;
+
 							// quinta transición
 							obtenerSiguienteCaracter();
-							palabra += caracterActual;
-							filaAct = filaActual;
-							colAct = colActual;
 
 							if (caracterActual == '_') {
 								palabra += caracterActual;
+								fila = filaActual;
+								columna = colActual;
+
 								// sexta transición
 								obtenerSiguienteCaracter();
-								palabra += caracterActual;
-								filaAct = filaActual;
-								colAct = colActual;
+
 								if (Character.isLetter(caracterActual)) {
 									palabra += caracterActual;
+
 									// ultima transición
 									obtenerSiguienteCaracter();
+
 									while (Character.isLetter(caracterActual)) {
 										palabra += caracterActual;
 										// ultima transición
 										obtenerSiguienteCaracter();
 									}
 
+									posicionInicioPalabra = posicionActual;
 									listaTokens.add(new Token(Categoria.IDENTIFICADOR, palabra, fila, columna));
 									obtenerSiguienteCaracter();
-									posicionInicioPalabra = posicionActual;
 									return true;
 								} else {
-									backtracking(posActual, filaAct, colAct);
+									// rechazo inmediato
+									backtracking(posActual, fila, columna);
 									return false;
 								}
 							} else {
-								backtracking(posActual, filaAct, colAct);
+								// rechazo inmediato
+								backtracking(posActual, fila, columna);
 								return false;
 							}
 						} else {
-							backtracking(posActual, filaAct, colAct);
+							// rechazo inmediato
+							backtracking(posActual, fila, columna);
 							return false;
 						}
 					} else {
-						backtracking(posActual, filaAct, colAct);
+						// rechazo inmediato
+						backtracking(posActual, fila, columna);
 						return false;
 					}
 				} else {
-					backtracking(posActual, filaAct, colAct);
+					// rechazo inmediato
+					backtracking(posActual, fila, columna);
 					return false;
 				}
 			} else {
 				// rechazo inmediato
-				backtracking(posActual, filaAct, colAct);
+				backtracking(posActual, fila, columna);
 				return false;
 			}
 		} else {
+			// rechazo inmediato
 			return false;
 		}
 	}
@@ -625,6 +632,7 @@ public class AnalizadorLexico {
 		String palabra = "";
 		int fila = filaActual;
 		int columna = colActual;
+
 		if (Character.isLetter(caracterActual)) {
 			palabra += caracterActual;
 			// primera transición
@@ -637,9 +645,10 @@ public class AnalizadorLexico {
 			}
 
 			if (palabrasReservadas.contains(palabra)) {
+
 				listaTokens.add(new Token(Categoria.PALABRA_RESERVADA, palabra, fila, columna));
-				obtenerSiguienteCaracter();
 				posicionInicioPalabra = posicionActual;
+				obtenerSiguienteCaracter();
 				return true;
 			} else {
 				// rechazo inmediato
@@ -672,14 +681,14 @@ public class AnalizadorLexico {
 	}
 
 	/**
-	 * Hexadecimal 
-	 * Ejemplo Hexadecimal 0xFF1A
+	 * Hexadecimal Ejemplo Hexadecimal 0xFF1A
+	 * 
 	 * @return
 	 */
 	public boolean esHexadecimal() {
 		if (caracterActual == '0') {
-			if(caracterActual == 'x') {
-				
+			if (caracterActual == 'x') {
+
 			}
 			String palabra = "";
 			int fila = filaActual;

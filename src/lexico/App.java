@@ -4,7 +4,7 @@ public class App {
 
 	public static void main(String[] args) {
 
-		String codigoFuente = "||AA1|:--->:";
+		String codigoFuente = "ABGF123_F";
 		AnalizadorLexico al = new AnalizadorLexico(codigoFuente);
 		al.analizar();
 		System.out.println(codigoFuente);
