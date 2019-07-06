@@ -106,7 +106,7 @@ public class AnalizadorLexico {
 
 		if (caracterActual == '^' || caracterActual == 'v') {
 
-			listaTokens.add(new Token(Categoria.LOGICO, caracterActual + "", filaActual, colActual));
+			listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, caracterActual + "", filaActual, colActual));
 			obtenerSiguienteCaracter();
 			return true;
 		}
@@ -117,7 +117,7 @@ public class AnalizadorLexico {
 				obtenerSiguienteCaracter();
 				if (esIdentificador()) {
 					if (caracterActual == ')') {
-						listaTokens.add(new Token(Categoria.LOGICO, "~()", filaActual, colActual));
+						listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "~()", filaActual, colActual));
 						obtenerSiguienteCaracter();
 						return true;
 					} else {
@@ -140,7 +140,7 @@ public class AnalizadorLexico {
 			if (caracterActual == '-') {
 				obtenerSiguienteCaracter();
 				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.LOGICO, "<->", filaActual, colActual));
+					listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "<->", filaActual, colActual));
 					obtenerSiguienteCaracter();
 					return true;
 				} else {
@@ -163,13 +163,13 @@ public class AnalizadorLexico {
 		if (caracterActual == ':') {
 			obtenerSiguienteCaracter();
 			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ":>", filaActual, colActual));
 				obtenerSiguienteCaracter();
 				return true;
 			} else if (caracterActual == ':') {
 				obtenerSiguienteCaracter();
 				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.ASIGNACION, "::>", filaActual, colActual));
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "::>", filaActual, colActual));
 					obtenerSiguienteCaracter();
 					return true;
 				} else {
@@ -189,7 +189,7 @@ public class AnalizadorLexico {
 			if (caracterActual == ':') {
 				obtenerSiguienteCaracter();
 				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.ASIGNACION, primerC + ":>", filaActual, colActual));
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, primerC + ":>", filaActual, colActual));
 					obtenerSiguienteCaracter();
 					return true;
 				} else {
@@ -209,7 +209,7 @@ public class AnalizadorLexico {
 				if (caracterActual == ':') {
 					obtenerSiguienteCaracter();
 					if (caracterActual == '>') {
-						listaTokens.add(new Token(Categoria.ASIGNACION, "||:>", filaActual, colActual));
+						listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "||:>", filaActual, colActual));
 						obtenerSiguienteCaracter();
 						return true;
 					} else {
@@ -233,7 +233,7 @@ public class AnalizadorLexico {
 		if (caracterActual == '>') {
 			obtenerSiguienteCaracter();
 			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, ">>", filaActual, colActual));
+				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ">>", filaActual, colActual));
 				obtenerSiguienteCaracter();
 				return true;
 			} else {
@@ -243,7 +243,7 @@ public class AnalizadorLexico {
 		} else if (caracterActual == '<') {
 			obtenerSiguienteCaracter();
 			if (caracterActual == '<') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, "<<", filaActual, colActual));
+				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "<<", filaActual, colActual));
 				obtenerSiguienteCaracter();
 				return true;
 			} else {
@@ -263,12 +263,12 @@ public class AnalizadorLexico {
 		if (caracterActual == ':') {
 			obtenerSiguienteCaracter();
 			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ":>", filaActual, colActual));
 				return true;
 			} else if (caracterActual == ':') {
 				obtenerSiguienteCaracter();
 				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.ASIGNACION, "::>", filaActual, colActual));
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "::>", filaActual, colActual));
 					return true;
 				} else {
 					backtracking(posActual, filaAct, colAct);
@@ -285,7 +285,7 @@ public class AnalizadorLexico {
 			if (caracterActual == ':') {
 				obtenerSiguienteCaracter();
 				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.ASIGNACION, caracterActual + ":>", filaActual, colActual));
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, caracterActual + ":>", filaActual, colActual));
 					return true;
 				} else {
 					backtracking(posActual, filaAct, colAct);
@@ -304,7 +304,7 @@ public class AnalizadorLexico {
 				if (caracterActual == ':') {
 					obtenerSiguienteCaracter();
 					if (caracterActual == '>') {
-						listaTokens.add(new Token(Categoria.ASIGNACION, ":>", filaActual, colActual));
+						listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ":>", filaActual, colActual));
 						return true;
 					} else {
 						backtracking(posActual, filaAct, colAct);
