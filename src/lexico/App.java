@@ -185,20 +185,23 @@ public class App implements ActionListener {
 		if(e.getSource() == btnLenguajesR) {
 			String[] columnas = { "Categoría", "Lenguaje Regular", "Equivalente java"};
 			String[][] data = {
-					{"NUMERO_NATURAL"},
-					{"NUMERO_REAL"},
-					{"IDENTIFICADOR"},
-					{"PALABRA_RESERVADA"},
-					{"OPERADOR_ARITMETICO"},
-					{"OPERADOR_RELACIONAL"},
-					{"OPERADOR_LOGICO"},
-					{"SEPARADOR"},
-					{"PARENTESIS"},
-					{"ASIGNACION"},
-					{"HEXADECIMAL"},
-					{"CADENA_CARACTERES"},
-					{"COMENTARIO"},
-					{"DESCONOCIDO"}
+					{"NUMERO_NATURAL","",""},
+					{"NUMERO_REAL","",""},
+					{"IDENTIFICADOR","",""},
+					{"PALABRA_RESERVADA","",""},
+					{"OPERADOR_ARITMETICO","",""},
+					{"OPERADOR_RELACIONAL","",""},
+					{"OPERADOR_LOGICO","",""},
+					{"OPERADOR_ASIGNACION","",""},
+					{"OPERADOR_INCREMENTO_DECREMENTO","",""},
+					{"PARENTESIS","",""},
+					{"LLAVES","",""},
+					{"TERMINAL","",""},
+					{"SEPARADOR","",""},
+					{"HEXADECIMAL","",""},
+					{"CADENA_CARACTERES","",""},
+					{"COMENTARIO","",""},
+					{"DESCONOCIDO","",""}
 			};
 			DefaultTableModel modelo = new DefaultTableModel(data, columnas);
 			table.setModel(modelo);
