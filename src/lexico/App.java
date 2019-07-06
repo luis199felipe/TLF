@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -13,8 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Font;
+import javax.swing.JTable;
 
 public class App implements ActionListener {
 
@@ -24,6 +29,8 @@ public class App implements ActionListener {
 	private JButton btnLenguajesR;
 	private JButton btnAnalizar;
 	private AnalizadorLexico al;
+	private JScrollPane scrolltabla;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -59,21 +66,25 @@ public class App implements ActionListener {
 
 		al = new AnalizadorLexico();
 		JScrollPane sp1 = new JScrollPane();
-		sp1.setBounds(20, 124, 591, 90);
+		sp1.setBounds(10, 79, 591, 99);
 		frame.getContentPane().add(sp1);
 
+		txtAnalisis = new JTextArea();
+		sp1.setViewportView(txtAnalisis);
+		txtAnalisis.setColumns(10);
+
 		btnAnalizar = new JButton("Obtener Tokens");
-		btnAnalizar.setBounds(20, 281, 205, 23);
+		btnAnalizar.setBounds(10, 189, 205, 23);
 		btnAnalizar.addActionListener(this);
 		frame.getContentPane().add(btnAnalizar);
 
 		btnAnalizarArchivo = new JButton("Analizar archivo");
-		btnAnalizarArchivo.setBounds(235, 242, 189, 23);
+		btnAnalizarArchivo.setBounds(225, 189, 189, 23);
 		btnAnalizarArchivo.addActionListener(this);
 		frame.getContentPane().add(btnAnalizarArchivo);
 
 		btnLenguajesR = new JButton("Lenguajes regulares");
-		btnLenguajesR.setBounds(434, 242, 177, 23);
+		btnLenguajesR.setBounds(424, 189, 177, 23);
 		btnLenguajesR.addActionListener(this);
 		frame.getContentPane().add(btnLenguajesR);
 
@@ -83,20 +94,54 @@ public class App implements ActionListener {
 		lblNewLabel.setBounds(10, 11, 591, 62);
 		frame.getContentPane().add(lblNewLabel);
 
-		txtAnalisis = new JTextArea();
-		txtAnalisis.setBounds(10, 84, 589, 88);
-		frame.getContentPane().add(txtAnalisis);
-		txtAnalisis.setColumns(10);
+		scrolltabla = new JScrollPane();
+		scrolltabla.setBounds(10, 222, 591, 120);
+		frame.getContentPane().add(scrolltabla);
 
+		table = new JTable();
+		scrolltabla.setViewportView(table);
+
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+
+	}
+
+	public String[][] setModelo() {
+
+		ArrayList<Token> listaTokens = al.getListaTokens();
+		String[][] salida = new String[listaTokens.size()][4];
+		for (int i = 0; i < salida.length; i++) {
+			Token t = listaTokens.get(i);
+			salida[i][0] = t.getCategoria().name();
+			salida[i][1] = t.getPalabra();
+			salida[i][2] = "" + t.getFila();
+			salida[i][3] = "" + t.getColumna();
+		}
+		return salida;
+	}
+
+	public void crearTabla(JTable tabla) {
+		String[] columnas = { "Categoría", "Palabra", "Fila", "Columna" };
+		String[][] data = setModelo();
+		DefaultTableModel modelo = new DefaultTableModel(data, columnas);
+		table.setModel(modelo);
+		scrolltabla.setViewportView(table);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAnalizar) {
-			String texto = txtAnalisis.getText();
-			al.setCodigoFuente(texto);
-			al.analizar();
+			try {
+				String texto = txtAnalisis.getText();
+				al.setCodigoFuente(texto);
+				al.analizar();
 //			txtResultado.setText(al.getListaTokens().toString());
+				crearTabla(table);
+
+			} catch (StringIndexOutOfBoundsException e1) {
+				JOptionPane.showMessageDialog(null, "Antes de analizar debe de escribir o anexar un código fuente",
+						"Código fuente vacio", JOptionPane.WARNING_MESSAGE);
+			}
 
 		}
 
@@ -131,6 +176,7 @@ public class App implements ActionListener {
 					al.setCodigoFuente(codigoFuente);
 					al.analizar();
 //					txtResultado.setText(al.getListaTokens().toString());
+					crearTabla(table);
 				}
 			}
 		}

@@ -15,14 +15,15 @@ public class AnalizadorLexico {
 		this.codigoFuente = codigoFuente;
 		this.listaTokens = new ArrayList<>();
 		this.palabrasReservadas = new ArrayList<String>();
-		//this.caracterActual = codigoFuente.charAt(0);
+		// this.caracterActual = codigoFuente.charAt(0);
 		this.finCodigo = '#';
 	}
+
 	public AnalizadorLexico() {
 		this.posicionInicioPalabra = 0;
 		this.listaTokens = new ArrayList<>();
 		this.palabrasReservadas = new ArrayList<String>();
-		//this.caracterActual = codigoFuente.charAt(0);
+		// this.caracterActual = codigoFuente.charAt(0);
 		this.finCodigo = '#';
 	}
 
@@ -457,11 +458,11 @@ public class AnalizadorLexico {
 	 * categoria NUMERO_REAL definida dentro de los tokens de un lenguaje de
 	 * programación.
 	 * 
-	 * @param real, cadena donde se va concatenando los caracteres válidos del
-	 *        número real.
+	 * @param real,           cadena donde se va concatenando los caracteres válidos
+	 *                        del número real.
 	 * @param contadorPuntos, entero que cuenta las veces que aparece un punto,
-	 * @param fila, fila desde donde se empieza a identificar el token.
-	 * @param columna, columna desde donde se empieza a identificar el token.
+	 * @param fila,           fila desde donde se empieza a identificar el token.
+	 * @param columna,        columna desde donde se empieza a identificar el token.
 	 * @return true || false
 	 */
 	public boolean esNumeroReal(String real, int contadorPuntos, int fila, int columna) {
@@ -523,48 +524,36 @@ public class AnalizadorLexico {
 
 		if (Character.isLetter(caracterActual)) {
 			palabra += caracterActual;
-			fila = filaActual;
-			columna = colActual;
 
 			// primera transición
 			obtenerSiguienteCaracter();
 
 			if (Character.isLetter(caracterActual)) {
 				palabra += caracterActual;
-				fila = filaActual;
-				columna = colActual;
 
 				// segunda transición
 				obtenerSiguienteCaracter();
 
 				if (Character.isDigit(caracterActual)) {
 					palabra += caracterActual;
-					fila = filaActual;
-					columna = colActual;
 
 					// tercera transición
 					obtenerSiguienteCaracter();
 
 					if (Character.isDigit(caracterActual)) {
 						palabra += caracterActual;
-						fila = filaActual;
-						columna = colActual;
 
 						// cuarta transición
 						obtenerSiguienteCaracter();
 
 						if (Character.isDigit(caracterActual)) {
 							palabra += caracterActual;
-							fila = filaActual;
-							columna = colActual;
 
 							// quinta transición
 							obtenerSiguienteCaracter();
 
 							if (caracterActual == '_') {
 								palabra += caracterActual;
-								fila = filaActual;
-								columna = colActual;
 
 								// sexta transición
 								obtenerSiguienteCaracter();
@@ -617,6 +606,7 @@ public class AnalizadorLexico {
 			}
 		} else {
 			// rechazo inmediato
+			backtracking(posActual, fila, columna);
 			return false;
 		}
 	}
@@ -702,7 +692,7 @@ public class AnalizadorLexico {
 					palabra += caracterActual;
 					obtenerSiguienteCaracter();
 				}
-				
+
 				listaTokens.add(new Token(Categoria.HEXADECIMAL, palabra, fila, columna));
 				return false;
 
