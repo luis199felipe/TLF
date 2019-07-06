@@ -180,6 +180,15 @@ public class App implements ActionListener {
 				}
 			}
 		}
+		
+		
+		if(e.getSource() == btnLenguajesR) {
+			String[] columnas = { "Categoría", "Lenguaje Regular", "equivalente java"};
+			String[][] data = setModelo();
+			DefaultTableModel modelo = new DefaultTableModel(data, columnas);
+			table.setModel(modelo);
+			scrolltabla.setViewportView(table);
+		}
 
 	}
 }

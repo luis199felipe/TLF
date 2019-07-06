@@ -50,10 +50,11 @@ public class AnalizadorLexico {
 			if (esIdentificador())
 				continue;
 
-//			if (esLogico())
-//				continue;
-//			if (esParentesis())
-//				continue;
+			if (esLogico())
+				continue;
+			
+			if (esParentesis())
+				continue;
 
 			if (esSeparador())
 				continue;
