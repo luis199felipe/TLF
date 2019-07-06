@@ -131,18 +131,17 @@ public class App implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAnalizar) {
-			try {
-				String texto = txtAnalisis.getText();
+			String texto = txtAnalisis.getText();
+			if (!texto.equals("")) {
 				al.setCodigoFuente(texto);
+				ArrayList<Token> lista = new ArrayList<>();
+				al.setListaTokens(lista);
 				al.analizar();
-//			txtResultado.setText(al.getListaTokens().toString());
 				crearTabla(table);
-
-			} catch (StringIndexOutOfBoundsException e1) {
+			} else {
 				JOptionPane.showMessageDialog(null, "Antes de analizar debe de escribir o anexar un código fuente",
 						"Código fuente vacio", JOptionPane.WARNING_MESSAGE);
 			}
-
 		}
 
 		if (e.getSource() == btnAnalizarArchivo) {
@@ -180,29 +179,15 @@ public class App implements ActionListener {
 				}
 			}
 		}
-		
-		
-		if(e.getSource() == btnLenguajesR) {
-			String[] columnas = { "Categoría", "Lenguaje Regular", "Equivalente java"};
-			String[][] data = {
-					{"NUMERO_NATURAL","",""},
-					{"NUMERO_REAL","",""},
-					{"IDENTIFICADOR","",""},
-					{"PALABRA_RESERVADA","",""},
-					{"OPERADOR_ARITMETICO","",""},
-					{"OPERADOR_RELACIONAL","",""},
-					{"OPERADOR_LOGICO","",""},
-					{"OPERADOR_ASIGNACION","",""},
-					{"OPERADOR_INCREMENTO_DECREMENTO","",""},
-					{"PARENTESIS","",""},
-					{"LLAVES","",""},
-					{"TERMINAL","",""},
-					{"SEPARADOR","",""},
-					{"HEXADECIMAL","",""},
-					{"CADENA_CARACTERES","",""},
-					{"COMENTARIO","",""},
-					{"DESCONOCIDO","",""}
-			};
+
+		if (e.getSource() == btnLenguajesR) {
+			String[] columnas = { "Categoría", "Lenguaje Regular", "Equivalente java" };
+			String[][] data = { { "NUMERO_NATURAL", "", "" }, { "NUMERO_REAL", "", "" }, { "IDENTIFICADOR", "", "" },
+					{ "PALABRA_RESERVADA", "", "" }, { "OPERADOR_ARITMETICO", "", "" },
+					{ "OPERADOR_RELACIONAL", "", "" }, { "OPERADOR_LOGICO", "", "" }, { "OPERADOR_ASIGNACION", "", "" },
+					{ "OPERADOR_INCREMENTO_DECREMENTO", "", "" }, { "PARENTESIS", "", "" }, { "LLAVES", "", "" },
+					{ "TERMINAL", "", "" }, { "SEPARADOR", "", "" }, { "HEXADECIMAL", "", "" },
+					{ "CADENA_CARACTERES", "", "" }, { "COMENTARIO", "", "" }, { "DESCONOCIDO", "", "" } };
 			DefaultTableModel modelo = new DefaultTableModel(data, columnas);
 			table.setModel(modelo);
 			scrolltabla.setViewportView(table);
