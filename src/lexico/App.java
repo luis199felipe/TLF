@@ -181,13 +181,27 @@ public class App implements ActionListener {
 		}
 
 		if (e.getSource() == btnLenguajesR) {
-			String[] columnas = { "Categoría", "Lenguaje Regular", "Equivalente java" };
-			String[][] data = { { "NUMERO_NATURAL", "", "" }, { "NUMERO_REAL", "", "" }, { "IDENTIFICADOR", "", "" },
-					{ "PALABRA_RESERVADA", "", "" }, { "OPERADOR_ARITMETICO", "", "" },
-					{ "OPERADOR_RELACIONAL", "", "" }, { "OPERADOR_LOGICO", "", "" }, { "OPERADOR_ASIGNACION", "", "" },
-					{ "OPERADOR_INCREMENTO_DECREMENTO", "", "" }, { "PARENTESIS", "", "" }, { "LLAVES", "", "" },
-					{ "TERMINAL", "", "" }, { "SEPARADOR", "", "" }, { "HEXADECIMAL", "", "" },
-					{ "CADENA_CARACTERES", "", "" }, { "COMENTARIO", "", "" }, { "DESCONOCIDO", "", "" } };
+			String[] columnas = { "Categoría", "Lenguaje Regular"};
+			String[][] data = {
+					{"NUMERO_NATURAL","nDD*"},
+					{"NUMERO_REAL","((DD*.DD*)u(.DD*)u(DD*.))d"},
+					{"IDENTIFICADOR","LLDDD_L*L"},
+					{"PALABRA_RESERVADA","{Metodo,Heredar,Usuario,Hacer,Accion,Salir}"},
+					{"OPERADOR_ARITMETICO","{(+)>, (-)<, (/)|, (*):, (%)||}"},
+					{"OPERADOR_RELACIONAL","{(>)>>, (<)<<, (>=)>>:>, (<=):><<, (!=)~:>, (==)<->}"},
+					{"OPERADOR_LOGICO","{(&&)^, (||)v, (!)~()}"},
+					{"OPERADOR_ASIGNACION","{(=):>, (+=)>:>, (-=)<:>, (/=)|:>, (*=)::>, (%=)||:>}"},
+					{"OPERADOR_INCREMENTO_DECREMENTO","FALTA"},
+					{"PARENTESIS","{(,)}"},
+					{"LLAVES","{{,}}"},
+					{"TERMINAL",";"},
+					{"SEPARADOR","-"},
+					{"HEXADECIMAL","0x(LuD)* con L=A,B,C,D,E,F"},
+					{"CADENA_CARACTERES","!(ASCII)*¡"},
+					{"COMENTARIO","$(ASCII)*$"},
+					{"DESCONOCIDO","COS"}
+			};
+		
 			DefaultTableModel modelo = new DefaultTableModel(data, columnas);
 			table.setModel(modelo);
 			scrolltabla.setViewportView(table);
