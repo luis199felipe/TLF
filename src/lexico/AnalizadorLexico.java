@@ -56,6 +56,10 @@ public class AnalizadorLexico {
 			if (esAsignacion())
 				continue;
 
+
+			if (esLogico())
+				continue;
+			
 			if (esOperadorAritmetico())
 				continue;
 
@@ -65,212 +69,39 @@ public class AnalizadorLexico {
 			if (esIdentificador())
 				continue;
 
-			if (esLogico())
-				continue;
 
 			if (esParentesis())
 				continue;
 
 			if (esSeparador())
 				continue;
+			
 			if (esHexadecimal())
 				continue;
+			
 			if (esCadenaCaracteres())
 				continue;
+			
 			if (esComentario())
 				continue;
+			
+			if (esTerminal())
+				continue;
+			
 			if (esNumeroReal())
 				continue;
+			
 			listaTokens.add(new Token(Categoria.DESCONOCIDO, "" + caracterActual, filaActual, colActual));
 			obtenerSiguienteCaracter();
 
 		}
 	}
-
-	private boolean esParentesis() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == '(' || caracterActual == ')') {
-
-			listaTokens.add(new Token(Categoria.PARENTESIS, caracterActual + "", filaActual, colActual));
-			obtenerSiguienteCaracter();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean esLlave() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == '{' || caracterActual == '}') {
-
-			listaTokens.add(new Token(Categoria.PARENTESIS, caracterActual + "", filaActual, colActual));
-			obtenerSiguienteCaracter();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean esLogico() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == '^' || caracterActual == 'v') {
-
-			listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, caracterActual + "", filaActual, colActual));
-			obtenerSiguienteCaracter();
-			return true;
-		}
-
-		if (caracterActual == '~') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '(') {
-				obtenerSiguienteCaracter();
-				if (esIdentificador()) {
-					if (caracterActual == ')') {
-						listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "~()", filaActual, colActual));
-						obtenerSiguienteCaracter();
-						return true;
-					} else {
-						backtracking(posActual, filaAct, colAct);
-						return false;
-					}
-				} else {
-					backtracking(posActual, filaAct, colAct);
-					return false;
-
-				}
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		}
-
-		if (caracterActual == '<') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '-') {
-				obtenerSiguienteCaracter();
-				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "<->", filaActual, colActual));
-					obtenerSiguienteCaracter();
-					return true;
-				} else {
-					backtracking(posActual, filaAct, colAct);
-					return false;
-				}
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		}
-		return false;
-	}
-
-	public boolean esAsignacion() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == ':') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ":>", filaActual, colActual));
-				obtenerSiguienteCaracter();
-				return true;
-			} else if (caracterActual == ':') {
-				obtenerSiguienteCaracter();
-				if (caracterActual == '>') {
-					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "::>", filaActual, colActual));
-					obtenerSiguienteCaracter();
-					return true;
-				} else {
-					backtracking(posActual, filaAct, colAct);
-					return false;
-
-				}
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-
-		} else if (caracterActual == '>' || caracterActual == '<' || caracterActual == '|') {
-			char primerC = caracterActual;
-
-			obtenerSiguienteCaracter();
-			if (caracterActual == ':') {
-				obtenerSiguienteCaracter();
-				if (caracterActual == '>') {
-
-					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, primerC + ":>", filaActual, colActual));
-					obtenerSiguienteCaracter();
-					return true;
-				} else {
-					backtracking(posActual, filaAct, colAct);
-					return false;
-				}
-			} else {
-				backtracking(posActual, filaAct, colAct);
-
-			}
-		}
-
-		if (caracterActual == '|') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '|') {
-				obtenerSiguienteCaracter();
-				if (caracterActual == ':') {
-					obtenerSiguienteCaracter();
-					if (caracterActual == '>') {
-						listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "||:>", filaActual, colActual));
-						obtenerSiguienteCaracter();
-						return true;
-					} else {
-						backtracking(posActual, filaAct, colAct);
-						return false;
-					}
-				}
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		}
-		return false;
-	}
-
-	public boolean IncrementoDecremento() {
-		int filaAct = filaActual;
-		int colAct = colActual;
-		int posActual = posicionActual;
-
-		if (caracterActual == '>') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '>') {
-				listaTokens.add(new Token(Categoria.OPERADOR_INCREMENTO, ">>", filaActual, colActual));
-				obtenerSiguienteCaracter();
-				return true;
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		} else if (caracterActual == '<') {
-			obtenerSiguienteCaracter();
-			if (caracterActual == '<') {
-				listaTokens.add(new Token(Categoria.OPERADOR_DECREMENTO, "<<", filaActual, colActual));
-				obtenerSiguienteCaracter();
-				return true;
-			} else {
-				backtracking(posActual, filaAct, colAct);
-				return false;
-			}
-		}
-
-		return false;
-	}
+	/**
+	 * Metodo que identifica si es un operador de asignacion como
+	 * {(=):>, (+=)>:>, (-=)<:>, (/=)|:>, (*=)::>, (%=)||:>}
+	 * 
+	 * @return true || false
+	 */
 
 	public boolean esOperadorAsignacion() {
 		int filaAct = filaActual;
@@ -436,6 +267,9 @@ public class AnalizadorLexico {
 					obtenerSiguienteCaracter();
 					return true;
 				}
+			}else {
+				backtracking(posActual, fila, columna);
+				return false;
 			}
 		} else if (caracterActual == '<') {// operador ==
 			// primera transición
@@ -455,6 +289,9 @@ public class AnalizadorLexico {
 				backtracking(posActual, fila, columna);
 				return false;
 			}
+		}else {
+			backtracking(posActual, fila, columna);
+			return false;
 		}
 		// rechazo inmediato
 		return false;
@@ -496,12 +333,6 @@ public class AnalizadorLexico {
 	 * categoria NUMERO_REAL definida dentro de los tokens de un lenguaje de
 	 * programación.
 	 * 
-	 * @param real, cadena donde se va concatenando los caracteres válidos del
-	 *        número real.
-	 * @param contadorPuntos, entero que cuenta las veces que aparece un punto,
-	 * @param fila, fila desde donde se empieza a identificar el token.
-	 * @param columna, columna desde donde se empieza a identificar el token.
-	 * @return true || false
 	 */
 
 	public boolean esNumeroReal() {
@@ -511,7 +342,18 @@ public class AnalizadorLexico {
 		int posActual = posicionActual;
 		return esNumeroReal(real, 0, fila, columna, posActual, false);
 	}
-
+	/**
+	 * Método recursivo que verifica si una cadena de caracteres hace parte de la
+	 * categoria NUMERO_REAL definida dentro de los tokens de un lenguaje de
+	 * programación.
+	 * 
+	 * @param real, cadena donde se va concatenando los caracteres válidos del
+	 *        número real.
+	 * @param contadorPuntos, entero que cuenta las veces que aparece un punto,
+	 * @param fila, fila desde donde se empieza a identificar el token.
+	 * @param columna, columna desde donde se empieza a identificar el token.
+	 * @return true || false
+	 */
 	public boolean esNumeroReal(String real, int contadorPuntos, int fila, int columna, int posActual, boolean result) {
 
 		if (contadorPuntos == 1) {
@@ -688,18 +530,238 @@ public class AnalizadorLexico {
 		}
 
 	}
-
+	
+	/**
+	 * ¬ Metodo que reconoce un separador
+	 * 
+	 * @return true || false
+	 */
 	public boolean esSeparador() {
 
 		if (caracterActual == '¬') {
-			String palabra = "";
+			listaTokens.add(new Token(Categoria.SEPARADOR, "¬", filaActual, colActual));
 			obtenerSiguienteCaracter();
-
-			listaTokens.add(new Token(Categoria.SEPARADOR, palabra, filaActual, colActual));
 			return true;
 		}
 		return false;
 	}
+	
+	/**
+	 * Metodo que identifica si es un operador logico
+	 * {(&&)^, (||)v, (!)~}
+	 * 
+	 * @return true || false
+	 */
+
+	public boolean esLogico() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '^' || caracterActual == 'v') {
+
+			listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		System.out.println("entro e hizo eso");
+		if (caracterActual == '~') {
+			obtenerSiguienteCaracter();
+			System.out.println(caracterActual);
+			if (esIdentificador()) {
+				System.out.println("entro a identificador");
+				listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "~", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		if (caracterActual == '<') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '-') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "<->", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Metodo que identifica si es un simbolo terminal
+	 * {(++)>>,(--)<<}
+	 * 
+	 * @return true || false
+	 */
+	private boolean esTerminal() {
+		if (caracterActual==';') {
+			listaTokens.add(new Token(Categoria.TERMINAL, caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Metodo que identifica si un parentesis
+	 * 
+	 * @return true || false
+	 */
+	public boolean esParentesis() {
+		if (caracterActual == '(' || caracterActual == ')') {
+
+			listaTokens.add(new Token(Categoria.PARENTESIS, caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Metodo que identifica si es una llave de abrir o cerrar
+	 * 
+	 * @return true || false
+	 */
+	public boolean esLlave() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '{' || caracterActual == '}') {
+
+			listaTokens.add(new Token(Categoria.PARENTESIS, caracterActual + "", filaActual, colActual));
+			obtenerSiguienteCaracter();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Metodo que identifica si es un operador de incremento o decremento
+	 * {(++)>>,(--)<<}
+	 * 
+	 * @return true || false
+	 */
+
+	public boolean IncrementoDecremento() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == '>') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.OPERADOR_INCREMENTO, ">>", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		} else if (caracterActual == '<') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '<') {
+				listaTokens.add(new Token(Categoria.OPERADOR_DECREMENTO, "<<", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Metodo que identifica si es un operador de asignacion
+	 * 
+	 * @return true || false
+	 */
+
+	public boolean esAsignacion() {
+		int filaAct = filaActual;
+		int colAct = colActual;
+		int posActual = posicionActual;
+
+		if (caracterActual == ':') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '>') {
+				listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, ":>", filaActual, colActual));
+				obtenerSiguienteCaracter();
+				return true;
+			} else if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "::>", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+
+		} else if (caracterActual == '>' || caracterActual == '<' || caracterActual == '|') {
+			char primerC = caracterActual;
+			obtenerSiguienteCaracter();
+			if (caracterActual == ':') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == '>') {
+
+					listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, primerC + ":>", filaActual, colActual));
+					obtenerSiguienteCaracter();
+					return true;
+				} else {
+					backtracking(posActual, filaAct, colAct);
+					return false;
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+
+			}
+		}
+
+		if (caracterActual == '|') {
+			obtenerSiguienteCaracter();
+			if (caracterActual == '|') {
+				obtenerSiguienteCaracter();
+				if (caracterActual == ':') {
+					obtenerSiguienteCaracter();
+					if (caracterActual == '>') {
+						listaTokens.add(new Token(Categoria.OPERADOR_ASIGNACION, "||:>", filaActual, colActual));
+						obtenerSiguienteCaracter();
+						return true;
+					} else {
+						backtracking(posActual, filaAct, colAct);
+						return false;
+					}
+				}
+			} else {
+				backtracking(posActual, filaAct, colAct);
+				return false;
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * 0x(LuD)* L: ABCDEF D: 0123456789 Hexadecimal Ejemplo Hexadecimal 0xFF1A
