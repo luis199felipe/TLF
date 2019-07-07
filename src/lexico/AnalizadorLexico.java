@@ -564,12 +564,12 @@ public class AnalizadorLexico {
 			obtenerSiguienteCaracter();
 			return true;
 		}
-		System.out.println("entro e hizo eso");
+		//System.out.println("entro e hizo eso");
 		if (caracterActual == '~') {
 			obtenerSiguienteCaracter();
-			System.out.println(caracterActual);
+//			System.out.println(caracterActual);
 			if (esIdentificador()) {
-				System.out.println("entro a identificador");
+//				System.out.println("entro a identificador");
 				listaTokens.add(new Token(Categoria.OPERADOR_LOGICO, "~", filaActual, colActual));
 				obtenerSiguienteCaracter();
 				return true;
